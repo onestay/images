@@ -40,6 +40,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
+
 	r.ParseMultipartForm(5e+8)
 	f, fh, _ := r.FormFile("file")
 
