@@ -51,12 +51,6 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 	defer f.Close()
 
-	if fh.Size > maxFileSize {
-		log.Println("Too large file upload attempted. Size:", fh.Size, "b")
-		w.WriteHeader(http.StatusRequestEntityTooLarge)
-		return
-	}
-
 	filename, err := generateFilename(f, fh.Filename, fh.Size)
 	if err != nil {
 		log.Println("Error while generating filename", err)
