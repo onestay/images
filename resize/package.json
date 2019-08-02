@@ -1,0 +1,21 @@
+{
+  "name": "resize",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "test": "mocha --timeout 6000"
+  },
+  "dependencies": {
+    "@google-cloud/storage": "^3.0.4",
+    "fast-crc32c": "^1.0.4",
+    "sharp": "^0.23.0"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "eslint": "^6.1.0",
+    "eslint-config-eslint": "^5.0.1",
+    "eslint-plugin-node": "^9.1.0",
+    "mocha": "^6.2.0"
+  }
+}
