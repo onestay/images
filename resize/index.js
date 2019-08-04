@@ -1,9 +1,8 @@
 const { Storage } = require('@google-cloud/storage');
 const sharp = require('sharp');
+const path = require('path');
+const mime = require('mime');
 
-if (process.env.NODE_ENV !== 'production') {
-    process.env.GOOGLE_APPLICATION_CREDENTIALS = './cred.json';
-}
 const storage = new Storage();
 
 
@@ -21,9 +20,10 @@ exports.resize = async event => {
     const uploadPromises = sizes.map(async size => {
         const resizeFile = await sharp(file).resize(size).toBuffer();
 
-        return await storage.bucket('i.onestay.moe').file(`thumbs/thumb_${event.name}_${size}px`).save(resizeFile, {
+        return await storage.bucket('i.onestay.moe').file(`thumbs/thumb_${event.name}_${size}px${path.extname(event.name)}`).save(resizeFile, {
             gzip: true,
-            resumable: false
+            resumable: false,
+            contentType: mime.getType(path.extname(event.name))
         });
     });
 

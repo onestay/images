@@ -4,11 +4,13 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "test": "mocha --timeout 6000"
+    "test": "eslint *.js && mocha --timeout 6000",
+    "deploy": "gcloud functions deploy resize --region europe-west1"
   },
   "dependencies": {
     "@google-cloud/storage": "^3.0.4",
     "fast-crc32c": "^1.0.4",
+    "mime": "^2.4.4",
     "sharp": "^0.23.0"
   },
   "devDependencies": {
