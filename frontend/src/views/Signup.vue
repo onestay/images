@@ -88,6 +88,7 @@ export default {
 				await this.$auth.signup(this.email, this.password, this.username);
 				this.$router.push('/');
 			} catch (e) {
+				this.processing = false;
 				this.signupError = e;
 			}
 		},
