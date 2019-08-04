@@ -1,12 +1,15 @@
 <template>
-	<div id="app">
-		<header>
+	<section
+		id="app"
+		class="hero is-fullheight"
+	>
+		<div class="hero-head">
 			<images-navbar />
-		</header>
-		<section class="section">
+		</div>
+		<div class="hero-body">
 			<router-view />
-		</section>
-	</div>
+		</div>
+	</section>
 </template>
 
 <script>
