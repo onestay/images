@@ -3,16 +3,13 @@ const { Storage } = require('@google-cloud/storage');
 
 const { resize } = require('../index');
 
-if (process.env.NODE_ENV !== 'production') {
-    process.env.GOOGLE_APPLICATION_CREDENTIALS = './creds_test.json';
-}
 const storage = new Storage();
 
 describe('Thumbnail generator', () => {
     describe('Generate Thumbnails', () => {
         it('should generate and upload thumbnails', async() => {
             const result = await resize({ name: 'resize_test.png', contentType: 'image/jpg' });
-            const data = await storage.bucket('i.onestay.moe').file('thumbs/thumb_128px_resize_test.png').getMetadata();
+            const data = await storage.bucket('i.onestay.moe').file('thumbs/thumb_resize_test.png_64px.png').getMetadata();
             const response = data[1];
 
             expect(response.statusCode).to.equal(200);
