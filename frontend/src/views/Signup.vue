@@ -4,10 +4,16 @@
 			<div class="column is-one-third">
 				<div class="card">
 					<div class="card-content">
-						<b-field label="Username">
+						<b-field
+							label="Username"
+							:type="{'is-danger': errors.has('username')}"
+							:message="errors.first('username')"
+						>
 							<b-input
 								v-model="username"
+								v-validate="'required'"
 								type="text"
+								name="username"
 								icon="account"
 								placeholder="Username"
 							/>
@@ -27,9 +33,15 @@
 								use-html5-validation
 							/>
 						</b-field>
-						<b-field label="Password">
+						<b-field
+							label="Password"
+							:type="{'is-danger': errors.has('password')}"
+							:message="errors.first('password')"
+						>
 							<b-input
 								v-model="password"
+								v-validate="'required|min:6'"
+								name="password"
 								type="password"
 								icon="lock"
 								placeholder="Password"
@@ -37,12 +49,16 @@
 						</b-field>
 						<b-field>
 							<b-button
+								:loading="processing"
 								type="is-success"
-								@click="login"
+								@click="signup"
 							>
 								Sign up
 							</b-button>
 						</b-field>
+						<p class="help is-danger">
+							{{ signupError }}
+						</p>
 					</div>
 				</div>
 			</div>
@@ -56,12 +72,24 @@ export default {
 			username: '',
 			email: '',
 			password: '',
+			signupError: '',
+			processing: false,
 		};
 	},
 	methods: {
-		login() {
-			this.$auth.signup()
-				.catch(e => console.log(e));
+		async signup() {
+			const ok = await this.$validator.validateAll();
+			if (!ok) {
+				return;
+			}
+
+			try {
+				this.processing = true;
+				await this.$auth.signup(this.email, this.password, this.username);
+				this.$router.push('/');
+			} catch (e) {
+				this.signupError = e;
+			}
 		},
 	},
 };
