@@ -12,7 +12,11 @@ module.exports = {
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
 	'indent': ['error', 'tab'],
 	'no-tabs': 'off',
-	'vue/html-indent': ['error', 'tab']
+	'vue/html-indent': ['error', 'tab'],
+	'no-underscore-dangle': 'off',
+	'no-plusplus': 'off',
+	'no-unused-expressions': ['error', {'allowTernary': true}],
+	'no-param-reassign': ['error', { 'props': false }]
   },
   parserOptions: {
     parser: 'babel-eslint',

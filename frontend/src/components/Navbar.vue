@@ -49,11 +49,10 @@
 				</div>
 			</b-navbar-item>
 			<router-link
-				v-if="user"
 				class="navbar-item"
-				to="/about"
+				to="/profile"
 			>
-				{{ user.email }}
+				Profile
 			</router-link>
 			<b-navbar-item v-if="user">
 				<div class="buttons">
