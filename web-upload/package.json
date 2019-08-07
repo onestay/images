@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@google-cloud/storage": "^3.0.4",
+    "firebase-admin": "^8.3.0",
     "mime": "^2.4.4",
     "uuid": "^3.3.2"
   }
