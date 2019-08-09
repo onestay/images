@@ -7,8 +7,10 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"path"
+	"strings"
 
 	"cloud.google.com/go/storage"
 	"github.com/google/uuid"
@@ -20,12 +22,20 @@ const (
 )
 
 var (
-	bucketName string
-	bkt        *storage.BucketHandle
+	bucketName     string
+	auth           string
+	randomFileName string
+	bkt            *storage.BucketHandle
 )
 
 func init() {
-	bucketName = os.Getenv("BUCKET_NAME")
+	bucketName, exists := os.LookupEnv("BUCKET_NAME")
+	if !exists {
+		panic("BUCKET_NAME required")
+	}
+
+	auth = os.Getenv("AUTH_PASS")
+	randomFileName = os.Getenv("RANDOM_FILE_NAME")
 	ctx := context.Background()
 	client, err := storage.NewClient(ctx)
 	if err != nil {
@@ -41,6 +51,11 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if len(auth) != 0 && r.Header.Get("Authorization") != auth {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
 	r.ParseMultipartForm(5e+8)
 	f, fh, _ := r.FormFile("file")
 
@@ -51,7 +66,27 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 	defer f.Close()
 
-	filename, err := generateFilename(f, fh.Filename, fh.Size)
+	var filename string
+	var err error
+	if len(randomFileName) != 0 {
+		switch randomFileName {
+		case "images":
+			if strings.Contains(r.Header.Get("Content-Type"), "image") {
+				filename, err = generateFilename(f, fh.Filename, fh.Size)
+			} else {
+				filename = url.QueryEscape(fh.Filename)
+			}
+		case "none":
+			filename = url.QueryEscape(fh.Filename)
+		case "all":
+			filename, err = generateFilename(f, fh.Filename, fh.Size)
+		default:
+			filename, err = generateFilename(f, fh.Filename, fh.Size)
+		}
+	} else {
+		filename, err = generateFilename(f, fh.Filename, fh.Size)
+	}
+
 	if err != nil {
 		log.Println("Error while generating filename", err)
 		w.WriteHeader(http.StatusInternalServerError)
