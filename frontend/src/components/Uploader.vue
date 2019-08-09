@@ -88,7 +88,7 @@ export default {
 				const token = await this.$auth._firebase.currentUser.getIdToken(true);
 
 				try {
-					const res = await this.$http.post('http://localhost:8081', shaData, {
+					const res = await this.$http.post(this.$config.webUploadServiceUrl, shaData, {
 						headers: {
 							Authorization: `Bearer ${token}`,
 							'Content-Type': 'Application/octet-stream',

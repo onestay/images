@@ -20,7 +20,7 @@ function generateFilename(file, fileName) {
 	return hash.digest('hex').substring(0, 4) + uuid().substring(0, 4) + path.extname(fileName);
 }
 
-exports.helloWorld = async (req, res) => {
+exports.upload = async (req, res) => {
 	res.set('Access-Control-Allow-Origin', '*');
 	res.set('Access-Control-Allow-Headers', 'Content-Type, X-Original-File-Name, Authorization');
 	res.set('Access-Control-Request-Method', 'POST');
@@ -87,7 +87,7 @@ exports.helloWorld = async (req, res) => {
 	const filename = generateFilename(req.body, originalFileName);
 	const d = new Date();
 	d.setMinutes(d.getMinutes() + 30);
-	console.log(mime.getType(originalFileName));
+
 	const signedUrl = await bucket.file(filename).getSignedUrl({
 		action: 'write',
 		expires: d,
@@ -96,6 +96,15 @@ exports.helloWorld = async (req, res) => {
 			'x-goog-meta-user': user.uid,
 		},
 	});
+
+	// add to db
+	admin.firestore().collection(`users/${user.uid}/uploads`).doc(filename).set({
+		uploaded: Date.now(),
+		tags: [],
+		public: true,
+		verifiedUpload: false,
+	});
+
 	return res.send({
 		ok: true,
 		url: signedUrl[0],
