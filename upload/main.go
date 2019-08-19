@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"mime"
 	"net/http"
 	"net/url"
 	"os"
@@ -29,9 +30,9 @@ var (
 )
 
 func init() {
-	bucketName, exists := os.LookupEnv("BUCKET_NAME")
-	if !exists {
-		panic("BUCKET_NAME required")
+	bucketName = os.Getenv("BUCKET_NAME")
+	if len(bucketName) == 0 {
+		panic("BUCKET_NAME env var empty")
 	}
 
 	auth = os.Getenv("AUTH_PASS")
@@ -71,13 +72,13 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	if len(randomFileName) != 0 {
 		switch randomFileName {
 		case "images":
-			if strings.Contains(r.Header.Get("Content-Type"), "image") {
+			if strings.Contains(mime.TypeByExtension(path.Ext(fh.Filename)), "image") {
 				filename, err = generateFilename(f, fh.Filename, fh.Size)
 			} else {
-				filename = url.QueryEscape(fh.Filename)
+				filename = fh.Filename
 			}
 		case "none":
-			filename = url.QueryEscape(fh.Filename)
+			filename = fh.Filename
 		case "all":
 			filename, err = generateFilename(f, fh.Filename, fh.Size)
 		default:
@@ -104,7 +105,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 	log.Println("uploaded file with name", filename, "to", bucketName)
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprint(w, "https://"+bucketName+"/"+filename)
+	fmt.Fprint(w, "https://"+bucketName+"/"+url.QueryEscape(filename))
 
 }
 func main() {
